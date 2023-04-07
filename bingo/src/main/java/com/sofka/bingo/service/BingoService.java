@@ -87,10 +87,6 @@ public class BingoService implements Ibingo{
         return cartonRepository.findByUsuarioId(idJugador);
     }
 
-    @Override
-    public InfoJuego deleInfo(Integer id) {
-        return  infoJuegoRepository.deleteByCartonId(id);
-    }
 
     //cartones
     @Override

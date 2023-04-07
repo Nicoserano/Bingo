@@ -105,5 +105,11 @@
 .claseSeleccionable{
   background-color: green;
 }
+.carton-salio {
+  background-color: red;
+  color: #A9A9A9;
+  text-decoration: line-through;
+}
+
 
 

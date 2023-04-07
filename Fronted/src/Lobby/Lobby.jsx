@@ -30,6 +30,44 @@ const manejarJugar = () => {
   setCancelarHabilitado(true);
 };
 
+const guardarInfo = async () => {
+  try {
+    const response = await fetch(`http://localhost:9090/inicio/${id_jugador}/jugar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id_jugador
+      }),
+    })
+    if (!response.ok) {
+      throw new Error("No se ha podido unir a la partida")
+    }
+    alert("Se ha unido a la partida")
+  } catch (error) {
+    alert(error.message)
+  }
+}
+
+const eliminarInfo = async ()=>{
+  const response = await fetch(`http://localhost:9090/inicio/${id_jugador}/info/eliminar`, {
+  method: "DELETE",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    id_jugador
+  }),
+})
+console.log(response);
+if (!response.ok) {
+  return alert("No se ha podido eliminar la partida");
+
+}
+return alert("Ha salido de  la partida")
+}
+
 return (
       <div>
           <h2 className="loby">Usuario: 
@@ -80,26 +118,27 @@ return (
           <form className="hidden">
             <input type="hidden" name="id_usuario" value={id_jugador} />
             <input type="hidden" name="usuario" value={usuario} />
-            <button className="jugar" type="submit"  disabled={estado !== 'en espera' || cancelarHabilitado} onClick={manejarJugar} >
+            <button className="jugar" type="submit"  disabled={estado !== 'en espera' || cancelarHabilitado} 
+            onClick={(event)=>{event.preventDefault();guardarInfo();manejarJugar()}}  >
               Jugar!
             </button>
           </form>
           <form className="hidden">
             <input type="hidden" name="id_usuario" value={id_jugador} />
-            <button className="bingo" type="submit">
+            <button className="bingo" type="submit" onClick={()=>{Navigate(`/ganador/${id_jugador}/${usuario}`)}}>
               Bingo!
             </button>
           </form>
           <form className="hidden">
             <input type="hidden" name="id_usuario" value={id_jugador} />
-            <button className="cancelar" type="submit" disabled={!cancelarHabilitado} >
+            <button className="cancelar" type="submit" disabled={!cancelarHabilitado}
+             onClick={(event) =>{event.preventDefault();eliminarInfo();setCancelarHabilitado(false)}}>
               Cancelar!
             </button>
           </form>
             <button className="cerrar" type="submit" onClick={() => Navigate("/")}  >
               Cerrar Sesion
             </button>
-         
       </div>
 );
 };

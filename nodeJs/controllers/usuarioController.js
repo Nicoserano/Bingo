@@ -103,26 +103,19 @@ setInterval(async () => {
   }
 }, 5000);
 
+
 setInterval(async () => {
   const response= await axios.get(`http://localhost:8080/estado`);
   estado= response.data.estado;
   id_juego=response.data.idJuego;
 }, 5000);
 
-
-
-
-
-
-
-
 const  Info = async (req, res) => {
   const jugador = req.body;
-  const usuario=req.body.usuario;
-  console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/info`);
-  res.redirect(`/inicio/${id_jugador}/${usuario}/carton`); 
+  
+
 }
 
 
@@ -132,16 +125,17 @@ const  EliminarInfo = async (req, res) => {
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.delete(`http://localhost:8080/inicio/${id_jugador}/info/eliminar`);
-  res.redirect(`/inicio/${id_jugador}/carton`);
+  
+  return res.status(200)
   
 }
+
 
 const  Ganador = async (req, res) => {
   const jugador = req.body;
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/ganador`);
-  res.redirect(`/inicio/${id_jugador}/carton`);
 }
 
 

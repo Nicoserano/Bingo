@@ -124,15 +124,18 @@ public class BingoController {
         // Busca el cartón que está en uso por el jugador
         Carton carton= infoJuegoRepository.findByIdCartonJugador(jugador,"en uso");
         // Busca la información del juego correspondiente al cartón en uso
-        Integer infoJuego=infoJuegoRepository.findByIdInfoJuego(carton);
+
+        Juego juego=infoJuegoRepository.findByIdsAndEstadoNotTerminado();
+        Integer idsJuego=infoJuegoRepository.findByCartonIds(carton,juego);
+
         // Si no hay información de juego para el cartón en uso, devuelve una respuesta sin contenido
-        if (infoJuego==null){
+        if (idsJuego==null){
             return ResponseEntity.ok("no hay juego disponible");
         }
         // Elimina la información del juego correspondiente al cartón en uso
-        InfoJuego infoJuegoEliminado=bingoService.deleInfo(infoJuego);
+        infoJuegoRepository.deleteByCartonId(idsJuego);
         // Devuelve la información del juego eliminada
-        return ResponseEntity.ok(infoJuegoEliminado);
+        return ResponseEntity.ok("Eliminado");
 
     }
     @PostMapping("/inicio/{id_jugador}/ganador")

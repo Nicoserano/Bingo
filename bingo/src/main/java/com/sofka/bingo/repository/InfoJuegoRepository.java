@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface InfoJuegoRepository  extends CrudRepository<InfoJuego, Integer> {
@@ -22,10 +25,15 @@ public interface InfoJuegoRepository  extends CrudRepository<InfoJuego, Integer>
     Juego findIdByEstadoJuego(@Param("estado") String estado);
 
     // Encuentra el id de la información del juego por el cartón
-    @Query("SELECT j FROM InfoJuego j WHERE j.carton = :id")
-    Integer findByIdInfoJuego(@Param("id") Carton id);
+    @Query("SELECT j.id_info FROM InfoJuego j WHERE j.carton = :id AND j.juego=:idJuego")
+    Integer findByCartonIds(@Param("id") Carton id,@Param("idJuego") Juego idJuego);
+    @Query("SELECT j FROM Juego j WHERE j.estado !=  'terminado'")
+    Juego findByIdsAndEstadoNotTerminado();
+
 
     // Elimina la información del juego por el id del cartón
-    @Query("DELETE FROM InfoJuego i WHERE i.id_info = :id")
-    InfoJuego deleteByCartonId(@Param("id") Integer id);
+    @Transactional
+    @Modifying
+    @Query("DELETE  FROM InfoJuego i WHERE i.id_info = :id")
+    void deleteByCartonId(@Param("id") Integer id);
 }

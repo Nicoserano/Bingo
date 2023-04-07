@@ -44,5 +44,5 @@ public interface Ibingo {
 
         //InfoJuego
         public InfoJuego createInfo(Juego juegoEnEspera, Carton cartonById);
-        public InfoJuego deleInfo(Integer idCarton);
+
 }

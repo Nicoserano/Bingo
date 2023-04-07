@@ -1,0 +1,16 @@
+.ganador-form{
+    text-align: center;
+    background-image: url('./ganador.jpg') ;
+    background-size: contain; 
+    padding: 20px;
+    width: 50%;
+    margin: 70px auto;
+    border-radius: 20px;
+    height: 500px;
+}
+.ganador-usuario{
+    color: gold;
+}
+.signos{
+    color: red;
+}

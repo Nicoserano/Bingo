@@ -29,7 +29,6 @@ const Login = () => {
       }
       const data = await response.json();
       const id_jugador = data.data.id_jugador;
-      console.log("ID del jugador:", id_jugador);
       setLogueado(true)
       Navigate(`lobby/${id_jugador}/${usuario.value}/carton`)   
     }
