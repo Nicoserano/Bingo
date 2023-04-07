@@ -1,0 +1,109 @@
+.loby{
+  color: white;
+  text-align: center;
+}
+
+.usuario{
+  color: yellow;
+  margin-right: 40px;
+}
+  th,td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  }
+  th {
+  background-color: #ccc;
+  }
+  td {
+  font-size: 24px;
+  }
+  tr {
+  background-color: #f2f2f2;
+  }
+.carton{
+    margin-bottom: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    margin: 30px auto;
+    width: 50%;
+}
+.jugar{
+    top: 640px;
+    position: absolute;
+    left: 920px;
+    background-color: blue;
+    padding: 14px 20px;
+    margin: 0px 0;
+    border: none;
+    cursor: pointer;
+    width: 20%;
+    border-radius: 0.45rem;
+  }
+.bingo {
+    top: 640px;
+    position: absolute;
+    left: 610px;
+    background-color: green ;
+    padding: 14px 20px;
+    margin: 0px 0;
+    border: none;
+    cursor: pointer;
+    width: 20%;
+    border-radius: 0.45rem;
+  }
+.cancelar {
+    top: 640px;
+    position: absolute;
+    left: 300px;
+    background-color: orangered  ;
+    padding: 14px 20px;
+    margin: 0px 0;
+    border: none;
+    cursor: pointer;
+    width: 20%;
+    border-radius: 0.45rem;
+  }
+  .label{
+    color: orangered;
+
+  }
+.hidden {
+    background-color: transparent;
+    border: none;
+  }
+  .balota-t{
+    color: white;
+  }
+.balotas{
+    display: block;
+    max-width: 800px;
+    overflow-x: auto;
+    margin-bottom: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    margin: 30px auto;
+    width: 50%;
+}
+.nueva-balota {
+  background-color: #ffcc00;
+}
+.cerrar{
+  top: 30px;
+  background-color: red  ;
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  width: 8%;
+  border-radius: 0.45rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.claseSeleccionable{
+  background-color: green;
+}
+
+

@@ -1,0 +1,53 @@
+body {
+    background-image: url('./bingo.png');
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+.form-login{
+    border: 3px solid #f1f1f1;
+    background-color: #ffffff;
+    padding: 20px;
+    width: 30%;
+    margin: 70px auto;
+    border-radius: 20px;  
+}
+h1 {
+text-align: center;
+margin-bottom: 20px;
+color: white;
+}
+input[type=text], input[type=password] {
+width: 100%;
+padding: 12px 20px;
+margin: 8px 0;
+display: inline-block;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
+button:hover {
+opacity: 0.8;
+}
+.cancelbtn {
+    background-color: orangered;
+    color: black;
+    width: 20%;
+    padding: 14px 20px;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+    border-radius: 0.45rem;
+    border: 1px solid black;
+}
+.ingresar{
+    background-color: #4CAF50;
+    color: black;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: 1px solid black;
+    cursor: pointer;
+    width: 30%;
+    border-radius: 0.45rem;
+    justify-content: flex-end;
+}
+
