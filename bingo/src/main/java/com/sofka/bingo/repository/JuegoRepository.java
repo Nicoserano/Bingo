@@ -19,6 +19,8 @@ public interface JuegoRepository extends CrudRepository<Juego, Integer> {
     @Query("SELECT j FROM Juego j WHERE j.estado != :estado")
     Juego findEstado(@Param("estado") String estado);
 
+    @Query("SELECT j.ganador FROM Juego j WHERE j.estado != :estado")
+    Juego ganadorFindEstado(@Param("estado") String estado);
 
 
 }

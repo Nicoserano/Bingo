@@ -57,7 +57,8 @@ const IniciarSesion =async(req,res)=>{
 
 let balotas = [];
 let estado;
-let id_juego;
+let id_juego=null;
+let ganador=null;
 const Loby = async (req, res) => {
   const usuario=req.params.usuario;
   const id_jugador = req.params.id_jugador;
@@ -77,7 +78,7 @@ const Loby = async (req, res) => {
       columnas[i].push(filas[j][i]);
     }
   }
-
+  
   return res.status(200).json({
     data: {
       id_juego,
@@ -85,9 +86,12 @@ const Loby = async (req, res) => {
       columnas,
       id_jugador,
       balotas,
-      usuario
+      usuario,
+      ganador
     }
+    
   })
+  
 }
 
 setInterval(async () => {
@@ -103,6 +107,19 @@ setInterval(async () => {
   }
 }, 5000);
 
+setInterval(async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/ganador');
+    if (!response.data ) { // Verificar si la respuesta es null o vacía
+      ganador=null;
+    } else {
+      ganador = response.data;
+      console.log('Actualizando ganador');
+    }
+  } catch (error) {
+  }
+}, 5000);
+
 
 setInterval(async () => {
   const response= await axios.get(`http://localhost:8080/estado`);
@@ -110,12 +127,11 @@ setInterval(async () => {
   id_juego=response.data.idJuego;
 }, 5000);
 
+
 const  Info = async (req, res) => {
   const jugador = req.body;
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/info`);
-  
-
 }
 
 
@@ -125,7 +141,7 @@ const  EliminarInfo = async (req, res) => {
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.delete(`http://localhost:8080/inicio/${id_jugador}/info/eliminar`);
-  
+
   return res.status(200)
   
 }
@@ -136,6 +152,9 @@ const  Ganador = async (req, res) => {
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/ganador`);
+  ganador= response.data;
+
+
 }
 
 

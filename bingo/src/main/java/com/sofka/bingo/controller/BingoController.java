@@ -157,6 +157,11 @@ public class BingoController {
       Juego estado= juegoRepository.findEstado("terminado");
       return ResponseEntity.ok(estado);
     }
+    @GetMapping("/ganador")
+    public ResponseEntity<Juego> ganador(){
+        Juego ganador =juegoRepository.ganadorFindEstado("terminado");
+        return ResponseEntity.ok(ganador);
+    }
 
 
 

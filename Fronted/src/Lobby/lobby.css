@@ -91,7 +91,6 @@
   background-color: #ffcc00;
 }
 .cerrar{
-  top: 30px;
   background-color: red  ;
   padding: 14px 20px;
   border: none;
@@ -102,14 +101,28 @@
   top: 10px;
   right: 10px;
 }
-.claseSeleccionable{
-  background-color: green;
+.reglas{
+
+  background-color: blue  ;
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  width: 8%;
+  border-radius: 0.45rem;
+  position: absolute;
+  top: 10px;
+  right: 150px;
 }
-.carton-salio {
+.boton-carton{
+  background-color: yellow;
+}
+.selected {
+  background-color: rgb(58, 215, 19);
+}
+.noselected{
   background-color: red;
-  color: #A9A9A9;
-  text-decoration: line-through;
 }
-
-
-
+.ultima-balota{
+  background-color: yellow;
+  color: black;
+}

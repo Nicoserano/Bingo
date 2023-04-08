@@ -13,7 +13,7 @@ router.post('/inicio',IniciarSesion);
 router.get(`/inicio/:id_jugador/:usuario/carton`,Loby);
 router.post(`/inicio/:id_jugador/jugar`,Info);
 router.delete(`/inicio/:id_jugador/info/eliminar`,EliminarInfo);
-router.post(`/inicio/:id_jugador/info/eliminar`,Ganador)
+router.post(`/ganador/:id_jugador/:usuario`,Ganador)
 
 
 

@@ -1,18 +1,29 @@
 import React, { useState, useEffect} from "react";
-import { useParams } from 'react-router-dom';
+import { useParams ,useNavigate} from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { useNavigate } from "react-router";
+
 
 import "./lobby.css";
 
 const Lobby = () => {
+
 const { id_jugador, usuario } = useParams();
 const [balotas, setBalotas] = useState([]);
 const [columnas, setColumnas] = useState([]);
 const [estado,setEstado]=useState("");
 const [id_juego,setidJuego]=useState("");
 const [cancelarHabilitado, setCancelarHabilitado] = useState(false);
+const [bingoHabilitado, setBingoHabilitado] = useState(true);
+const [ganador,setganador]=useState("");
+const [casillaSeleccionada, setCasillaSeleccionada] = useState("");
+const ultimaBalota = balotas[balotas.length - 1];
+
+
+
+
+
 const Navigate = useNavigate();
+
 
 
 useInterval(() => {
@@ -23,12 +34,43 @@ useInterval(() => {
     setColumnas(data.data.columnas);
     setEstado(data.data.estado);
     setidJuego(data.data.id_juego);
+    setganador(data.data.ganador);
+    if (ganador){
+      Navigate( `/ganador/${ganador}`)
+    }
   };
   obtenerDatos();
 }, 5000);
+
+
 const manejarJugar = () => {
   setCancelarHabilitado(true);
 };
+
+const handleCasillaClick = (event, numero) => {
+  event.stopPropagation();
+  let className ;
+  let ver =Number(numero)  
+  const casilla = event.target;  
+  const columna = casilla.cellIndex;
+  console.log(`Se hizo clic en la casilla ${numero} en la fila ${filaNumero} y la columna ${columna}`);
+  if(estado=="en juego" && cancelarHabilitado==true ){
+    if (balotas.includes(ver)) {
+      className = "selected";
+ 
+    } else {
+      className ="noselected";
+    }
+    event.target.className = className; 
+  }
+
+  
+
+
+
+}
+
+
 
 const guardarInfo = async () => {
   try {
@@ -50,6 +92,30 @@ const guardarInfo = async () => {
   }
 }
 
+
+
+const guardarGanador = async () =>  { 
+try {
+  const response = await fetch(`http://localhost:9090/ganador/${id_jugador}/${usuario}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id_jugador
+    }),
+  })
+  if (!response.ok) {
+    throw new Error("No se ha podido unir a la partida")
+  }
+  alert("Se ha unido a la partida")
+} catch (error) {
+  alert(error.message)
+}
+}
+
+
+
 const eliminarInfo = async ()=>{
   const response = await fetch(`http://localhost:9090/inicio/${id_jugador}/info/eliminar`, {
   method: "DELETE",
@@ -63,10 +129,11 @@ const eliminarInfo = async ()=>{
 console.log(response);
 if (!response.ok) {
   return alert("No se ha podido eliminar la partida");
-
 }
 return alert("Ha salido de  la partida")
 }
+
+
 
 return (
       <div>
@@ -76,19 +143,29 @@ return (
             <span className="usuario">{estado}</span>
             <span >Id Juego:</span>
             <span className="usuario">{id_juego}</span>
+            <span >Ganador:</span>
+            <span className="usuario">{ganador}</span>
           </h2>
-          
           <table className="balotas">
-            <thead className="balota-t"><h3>Última balota:</h3></thead>
+            <thead className="balota-t">
+              <tr> 
+                <th>Última balota:</th>
+                <th className="ultima-balota"> {ultimaBalota}</th>
+              </tr>
+             
+            </thead>
+            
             <tbody>
               <tr>
-                {balotas.reverse().map((balota, index) => {
-                  if (index === 0) {
-                    return <td key={index} className="nueva-balota">{balota}</td>;
-                  } else {
-                    return <td key={index}>{balota}</td>;
-                  }
-                })}
+              {balotas.map((balota, bindex) => {
+                if (bindex === balotas.length - 1) {
+                  return null; 
+                } else if (bindex === balotas.length - 2) {
+                  return <td key={bindex} className="nueva-balota">{balota}</td>;
+                } else {
+                  return <td key={bindex}>{balota}</td>;
+                }
+})}
               </tr>
             </tbody>
           </table>
@@ -103,11 +180,12 @@ return (
               </tr>
             </thead>
             <tbody>
-              {columnas.map((columna, index) => {
+              {columnas.map((columna, cindex) => {
                 return (
-                  <tr key={index}>
-                    {columna.map((numero, index) => {
-                      return <td key={index}>{numero}</td>;
+                  <tr key={cindex}>
+                    {columna.map((numero, cindex) => {
+                      return <td key={cindex} className=""
+                      onClick={(event) => handleCasillaClick(event, numero) }>{numero}</td>;
                     })}
                   </tr>
                 );
@@ -125,7 +203,7 @@ return (
           </form>
           <form className="hidden">
             <input type="hidden" name="id_usuario" value={id_jugador} />
-            <button className="bingo" type="submit" onClick={()=>{Navigate(`/ganador/${id_jugador}/${usuario}`)}}>
+            <button className="bingo" type="submit" disabled={bingoHabilitado} onClick={(event)=>{event.preventDefault();guardarGanador()}}>
               Bingo!
             </button>
           </form>
@@ -138,6 +216,9 @@ return (
           </form>
             <button className="cerrar" type="submit" onClick={() => Navigate("/")}  >
               Cerrar Sesion
+            </button>
+            <button className="reglas" type="submit" onClick={() => Navigate("/reglas")}  >
+              Reglas
             </button>
       </div>
 );
