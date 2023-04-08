@@ -15,8 +15,9 @@ const [id_juego,setidJuego]=useState("");
 const [cancelarHabilitado, setCancelarHabilitado] = useState(false);
 const [bingoHabilitado, setBingoHabilitado] = useState(true);
 const [ganador,setganador]=useState("");
-const [casillaSeleccionada, setCasillaSeleccionada] = useState("");
+const [contadorColumnas, setContadorColumnas] = useState([0, 0, 0, 0, 0]);
 const ultimaBalota = balotas[balotas.length - 1];
+const [casillaSeleccionada,setCasillaSeleccionada]=useState([])
 
 
 
@@ -53,17 +54,25 @@ const handleCasillaClick = (event, numero) => {
   let ver =Number(numero)  
   const casilla = event.target;  
   const columna = casilla.cellIndex;
-  console.log(`Se hizo clic en la casilla ${numero} en la fila ${filaNumero} y la columna ${columna}`);
+
   if(estado=="en juego" && cancelarHabilitado==true ){
     if (balotas.includes(ver)) {
       className = "selected";
- 
+      const nuevosContadores = [...contadorColumnas];
+      nuevosContadores[columna]++; // incrementar el contador de la columna correspondiente
+      setContadorColumnas(nuevosContadores); // actualizar los contadores en el estado
+      setCasillaSeleccionada([ columna]);
     } else {
       className ="noselected";
     }
     event.target.className = className; 
   }
-
+    const columnaLlena = contadorColumnas.some(contador => contador === 5);
+    if (columnaLlena) {
+      setBingoHabilitado(false);
+    } else {
+      setBingoHabilitado(true);
+    }
   
 
 
