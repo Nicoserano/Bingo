@@ -2,6 +2,7 @@ const {Usuario} = require('../models/usuario');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
 
+
 const crearUsuario = async (req, res) => {
     try {
       const { nombre, usuario, email, contraseña }=req.body;
@@ -24,6 +25,7 @@ const crearUsuario = async (req, res) => {
       res.status(500).send('Ha ocurrido un error al crear el usuario');
     }
 };
+
 
 const IniciarSesion =async(req,res)=>{
   const {usuario} = req.body;
@@ -53,6 +55,7 @@ const IniciarSesion =async(req,res)=>{
       return res.status(400).json({ message: 'no existe un usuario con ese nombre' });
     }
 }
+
 
 
 let balotas = [];
@@ -94,6 +97,7 @@ const Loby = async (req, res) => {
   
 }
 
+
 setInterval(async () => {
   try {
     const response = await axios.get('http://localhost:8080/juegos/balotas');
@@ -106,6 +110,7 @@ setInterval(async () => {
   } catch (error) {
   }
 }, 5000);
+
 
 setInterval(async () => {
   try {
@@ -121,6 +126,7 @@ setInterval(async () => {
 }, 5000);
 
 
+
 setInterval(async () => {
   const response= await axios.get(`http://localhost:8080/estado`);
   estado= response.data.estado;
@@ -132,6 +138,7 @@ const  Info = async (req, res) => {
   const jugador = req.body;
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/info`);
+  return res.status(200);
 }
 
 
@@ -141,7 +148,6 @@ const  EliminarInfo = async (req, res) => {
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.delete(`http://localhost:8080/inicio/${id_jugador}/info/eliminar`);
-
   return res.status(200)
   
 }
@@ -152,7 +158,7 @@ const  Ganador = async (req, res) => {
   console.log(jugador);
   const id_jugador= parseInt(jugador.id_jugador);
   const response = await axios.post(`http://localhost:8080/inicio/${id_jugador}/ganador`);
-  ganador= response.data;
+  ganador=response.data;
 
 
 }

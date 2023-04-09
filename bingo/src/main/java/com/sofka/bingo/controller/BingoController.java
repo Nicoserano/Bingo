@@ -152,11 +152,21 @@ public class BingoController {
         return  ResponseEntity.ok(jugador.getUsuario());
 
     }
+
+    /**
+     * Devuelve el juego en estado diferente de "terminado".
+     * @return El juego en estado diferente de "terminado".
+     */
     @GetMapping("/estado")
     public ResponseEntity<Juego> estado(){
       Juego estado= juegoRepository.findEstado("terminado");
       return ResponseEntity.ok(estado);
     }
+
+    /**
+     * Devuelve el juego en estado diferente de "terminado" con un ganador.
+     * @return El juego en estado diferente de "terminado" con un ganador.
+     */
     @GetMapping("/ganador")
     public ResponseEntity<Juego> ganador(){
         Juego ganador =juegoRepository.ganadorFindEstado("terminado");

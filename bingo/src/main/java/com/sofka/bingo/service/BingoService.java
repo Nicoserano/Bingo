@@ -7,7 +7,11 @@ import com.sofka.bingo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -17,11 +21,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class BingoService implements Ibingo{
+
+    // Repositorios para las entidades involucradas en el juego
     @Autowired
     private CartonRepository cartonRepository;
     @Autowired
     private JuegoRepository juegoRepository;
-
     @Autowired
     private JugadorRepository jugadorRepository;
     @Autowired
@@ -29,82 +34,96 @@ public class BingoService implements Ibingo{
     @Autowired
     private InfoJuegoRepository infoJuegoRepository;
 
+
+    // ScheduledExecutorService y ScheduledFuture para programar tareas
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> juegoTask;
 
-    //jugador
+
+    // Método para crear un nuevo jugador
     @Override
     public Jugador createJugador(Jugador jugador) {
-        return jugadorRepository.save(jugador);
+        return jugadorRepository.save(jugador); // Guardar jugador en la base de datos
     }
 
-    //juego
+    // Método para obtener un juego según su ID
     @Override
     public Juego getJuegoById(Integer id) {
-        Optional<Juego> juego = juegoRepository.findById(id);
+        Optional<Juego> juego = juegoRepository.findById(id); // Buscar juego en la base de datos
         if (juego.isPresent()) {
-            return juego.get();
+            return juego.get(); // Devolver juego si está presente
         } else {
-            throw new NoSuchElementException("Juego no encontrado");
+            throw new NoSuchElementException("Juego no encontrado"); // Lanzar excepción si el juego no está presente
         }
     }
 
+    // Método para iniciar un juego según su ID
     @Override
     public Juego startJuego(Integer id) {
-        Juego juego = getJuegoById(id);
-        juego.setEstado("en espera");
-        juegoRepository.save(juego);
+        Juego juego = getJuegoById(id); // Obtener juego según su ID
+        juego.setEstado("en espera"); // Actualizar estado del juego a "en espera"
+        juegoRepository.save(juego); // Guardar juego en la base de datos
 
-        // Iniciar juego después de 5 minutos
+        // Programar tarea para cambiar el estado del juego a "en juego" y crear una balota después de 5 minutos
         juegoTask = scheduler.schedule(() -> {
             juego.setEstado("en juego");
             juegoRepository.save(juego);
-            if (juego.getGanador()==null){
-            createBalota(id);
+            if (juego.getGanador() == null) {
+                createBalota(id);
             }
 
-            // Finalizar juego después de 5 minutos
+            // Programar tarea para cambiar el estado del juego a "terminado" después de otros 5 minutos
             scheduler.schedule(() -> {
                 juego.setEstado("terminado");
                 juegoRepository.save(juego);
             }, 5, TimeUnit.MINUTES);
         }, 5, TimeUnit.MINUTES);
 
-        return juego;
+        return juego; // Devolver juego actualizado
     }
 
+    // Método para buscar el ID de un juego según su estado
     @Override
     public Integer buscarEstado(String estado) {
-        return juegoRepository.findIdByEstado(estado);
+        return juegoRepository.findIdByEstado(estado); // Buscar ID de juego en la base de datos según su estado
     }
+
+    // Método para buscar un juego según su estado
     @Override
     public Juego buscarEstadoJuego(String estado) {
-        return balotaRepository.findIdByEstadoJuego(estado);
+        return balotaRepository.findIdByEstadoJuego(estado); // Buscar juego en la base de datos según su estado
     }
 
+
+    // Método para buscar un jugador según su ID
     @Override
     public Jugador searchJugadorId(Integer idJugador) {
-        return cartonRepository.findByUsuarioId(idJugador);
+        return cartonRepository.findByUsuarioId(idJugador); // Buscar jugador en la base de datos según su ID
     }
 
-
-    //cartones
+    // Método para actualizar el cartón de un jugador
     @Override
     public Carton updateCarton(Jugador jugador) {
-        Integer idcartonAntiguo = cartonRepository.findByIdJugador(jugador,"en uso");
+        Integer idcartonAntiguo = cartonRepository.findByIdJugador(jugador, "en uso"); // Buscar ID del cartón antiguo del jugador
         if (idcartonAntiguo == null) {
-            return createNumber(jugador);
+            return createNumber(jugador); // Si el jugador no tiene cartón antiguo, crear uno nuevo
         }
-        Carton  cartonAntiguo =cartonRepository.findByIdCarton(idcartonAntiguo);
-        cartonAntiguo.setEstado("vencido");
-        return createNumber(jugador);
+        Carton cartonAntiguo = cartonRepository.findByIdCarton(idcartonAntiguo); // Obtener cartón antiguo del jugador según su ID
+        cartonAntiguo.setEstado("vencido"); // Actualizar estado del cartón antiguo a "vencido"
+        return createNumber(jugador); // Crear un nuevo cartón para el jugador
     }
+
 
     @Override
     public Carton createNumber(Jugador jugador) {
-        Carton carton=new Carton();
+        // Se crea un objeto Carton y se le asigna el jugador pasado como parámetro
+        Carton carton = new Carton();
         carton.setIdJugador(jugador);
+
+        // Se crea un objeto Random para generar números aleatorios
         Random random = new Random();
+
+        // Se crean listas para almacenar los números de cada columna del cartón
         List<Integer> numerosColumnaB = new ArrayList<>();
         List<Integer> numerosColumnaI = new ArrayList<>();
         List<Integer> numerosColumnaN = new ArrayList<>();
@@ -187,41 +206,72 @@ public class BingoService implements Ibingo{
             e.printStackTrace();
             cartonJSONO = "[]";} // En caso de error, devolver un cartón vacío
 
-
+        // Asignar los valores de los números generados aleatoriamente a cada columna del cartón
         carton.setB(cartonJSONB);
         carton.setI(cartonJSONI);
         carton.setN(cartonJSONN);
         carton.setG(cartonJSONG);
         carton.setO(cartonJSONO);
+
+        // Establecer el estado del cartón como "en uso"
         carton.setEstado("en uso");
 
+        // Guardar el cartón generado en la base de datos y devolverlo
         return cartonRepository.save(carton);
+
     }
 
+    /**
+     * Retorna una lista de los números del cartón actual de un jugador específico.
+     *
+     * @param jugador el jugador para el cual se desea obtener los números de su cartón
+     * @return una lista de los números del cartón actual del jugador especificado
+     */
     @Override
     public List<String> getCartonesByJugador(Jugador jugador) {
+        // Obtiene el número de cartón actual del jugador
         Integer cartones = cartonRepository.findByIdJugador(jugador,"en uso");
-        List<String> B=  cartonRepository.findByIdB(cartones);
-        return B;
+        // Obtiene la lista de números correspondientes a la columna B del cartón
+        List<String> bingo=  cartonRepository.findByIdB(cartones);
+        // Retorna la lista de números de la columna bingo
+        return bingo;
     }
 
+
     //Balotas
+    /**
+
+     Crea una nueva balota para el juego indicado cada 5 segundos, hasta que se completen
+     75 balotas o se cumplan 5 minutos.
+
+     @param id el identificador del juego.
+
+     @return el juego actualizado.
+     */
     @Override
     public Juego createBalota(Integer id) {
+        // Obtener el juego correspondiente al id
         Juego juego = getJuegoById(id);
+
+        // Crear una lista para almacenar los números generados hasta el momento
         List<Integer> numerosGenerados = new ArrayList<>();
+
         // Programar la creación de una balota cada 5 segundos
         ScheduledFuture<?> balotaTask = scheduler.scheduleAtFixedRate(() -> {
+        // Crear una nueva balota y asignarle el juego correspondiente
             Balotas balota = new Balotas();
             balota.setJuego(juego);
+            // Generar un número aleatorio entre 1 y 75, evitando que se repitan los números ya generados
             Random random = new Random();
-
-            // Verificar si ya se generó el número
             int numeroAleatorio;
             do {
                 numeroAleatorio = random.nextInt(75) + 1;
             } while (numerosGenerados.contains(numeroAleatorio));
+
+            // Agregar el número generado a la lista de números generados
             numerosGenerados.add(numeroAleatorio);
+
+            // Asignar el número generado a la balota y guardarla en la base de datos
             balota.setBalota(numeroAleatorio);
             balotaRepository.save(balota);
         }, 0, 5, TimeUnit.SECONDS);
@@ -231,16 +281,20 @@ public class BingoService implements Ibingo{
             balotaTask.cancel(true);
         }, 5, TimeUnit.MINUTES);
 
+        // Devolver el juego actualizado
         return juego;
     }
+
+    // Método para verificar si un jugador es ganador
     @Override
     public boolean verificarGanador(Jugador idjugador){
+        // Buscamos el estado del juego actual
         Juego juego = buscarEstadoJuego("en juego");
+        // Obtenemos todas las balotas generadas en el juego
         List<Balotas> balotas = buscarBalotasPorIdJuego(juego);
-
         List<List<Balotas>> balotasSeparadas = new ArrayList<>();
 
-        // Creamos las listas vacías para cada rango de números
+        // Creamos una lista para cada rango de números del cartón
         for (int i = 0; i < 5; i++) {
             balotasSeparadas.add(new ArrayList<Balotas>());
         }
@@ -255,7 +309,7 @@ public class BingoService implements Ibingo{
         List<List<Integer>> numeros = new ArrayList<>();
         List<String> carton = getCartonesByJugador(idjugador);
 
-        // Recorremos cada string en la lista de carton
+        // Recorremos cada string en la lista de cartón del jugador
         for (String numerosCarton : carton) {
             String[] numerosArray = numerosCarton.split(",");
             List<Integer> numerosList = new ArrayList<>();
@@ -302,11 +356,11 @@ public class BingoService implements Ibingo{
             // Verificamos si todos los números de la columna están presentes en la lista de balotas correspondiente
             boolean ganadorColumna = lista.stream().map(Balotas::getBalota).collect(Collectors.toList()).containsAll(columna);
 
+            // Si el jugador es ganador, actualizamos el juego con su nombre y cambiamos su estado a "verificando"
             if (ganadorColumna) {
                 ganador = true;
-                System.out.println("El jugador " + idjugador.getUsuario() + " ha ganado la columna " + (i+1)+juego.getGanador());
                 juego.setGanador(idjugador.getUsuario());
-                juego.setEstado("terminado");
+                juego.setEstado("verificando");
                 juegoRepository.save(juego);
             }
         }
@@ -314,18 +368,21 @@ public class BingoService implements Ibingo{
         return ganador;
     }
 
-
+    //BUSCAR BALOTAS POR ID JUEGO
     @Override
     public List<Balotas> buscarBalotasPorIdJuego(Juego idJuego) {
         return balotaRepository.findByJuegoId(idJuego);
     }
 
-    //INFOJUEGO
+    //CREAR INFO DE JUEGO
     @Override
     public InfoJuego createInfo(Juego juegoEnEspera, Carton cartonById) {
+        // Creamos un objeto de tipo InfoJuego y le asignamos los valores recibidos como parámetros
         InfoJuego infoJuego = new InfoJuego();
         infoJuego.setJuego(juegoEnEspera);
         infoJuego.setCarton(cartonById);
+
+        // Guardamos el objeto en la base de datos y lo retornamos
         return infoJuegoRepository.save(infoJuego);
     }
 
