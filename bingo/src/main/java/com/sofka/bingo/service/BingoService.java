@@ -71,13 +71,18 @@ public class BingoService implements Ibingo{
             if (juego.getGanador() == null) {
                 createBalota(id);
             }
-
             // Programar tarea para cambiar el estado del juego a "terminado" después de otros 5 minutos
             scheduler.schedule(() -> {
-                juego.setEstado("terminado");
-                juegoRepository.save(juego);
+                Juego juegoactual = juegoRepository.findEstadoJuego("en juego");
+                if (juegoactual.getEstado().equals("en juego")){
+                    juegoactual.setEstado("terminado");
+                    juegoRepository.save(juego);
+                }
+                else {
+                    System.out.println("funcione");
+                }
             }, 5, TimeUnit.MINUTES);
-        }, 5, TimeUnit.MINUTES);
+        }, 3, TimeUnit.MINUTES);
 
         return juego; // Devolver juego actualizado
     }
@@ -285,16 +290,14 @@ public class BingoService implements Ibingo{
         return juego;
     }
 
-    // Método para verificar si un jugador es ganador
     @Override
     public boolean verificarGanador(Jugador idjugador){
-        // Buscamos el estado del juego actual
         Juego juego = buscarEstadoJuego("en juego");
-        // Obtenemos todas las balotas generadas en el juego
         List<Balotas> balotas = buscarBalotasPorIdJuego(juego);
+
         List<List<Balotas>> balotasSeparadas = new ArrayList<>();
 
-        // Creamos una lista para cada rango de números del cartón
+        // Creamos las listas vacías para cada rango de números
         for (int i = 0; i < 5; i++) {
             balotasSeparadas.add(new ArrayList<Balotas>());
         }
@@ -309,7 +312,7 @@ public class BingoService implements Ibingo{
         List<List<Integer>> numeros = new ArrayList<>();
         List<String> carton = getCartonesByJugador(idjugador);
 
-        // Recorremos cada string en la lista de cartón del jugador
+        // Recorremos cada string en la lista de carton
         for (String numerosCarton : carton) {
             String[] numerosArray = numerosCarton.split(",");
             List<Integer> numerosList = new ArrayList<>();
@@ -356,11 +359,11 @@ public class BingoService implements Ibingo{
             // Verificamos si todos los números de la columna están presentes en la lista de balotas correspondiente
             boolean ganadorColumna = lista.stream().map(Balotas::getBalota).collect(Collectors.toList()).containsAll(columna);
 
-            // Si el jugador es ganador, actualizamos el juego con su nombre y cambiamos su estado a "verificando"
             if (ganadorColumna) {
                 ganador = true;
+                System.out.println("El jugador " + idjugador.getUsuario() + " ha ganado la columna " + (i+1)+juego.getGanador());
                 juego.setGanador(idjugador.getUsuario());
-                juego.setEstado("verificando");
+                juego.setEstado("terminado");
                 juegoRepository.save(juego);
             }
         }
@@ -368,21 +371,18 @@ public class BingoService implements Ibingo{
         return ganador;
     }
 
-    //BUSCAR BALOTAS POR ID JUEGO
+
     @Override
     public List<Balotas> buscarBalotasPorIdJuego(Juego idJuego) {
         return balotaRepository.findByJuegoId(idJuego);
     }
 
-    //CREAR INFO DE JUEGO
+    //INFOJUEGO
     @Override
     public InfoJuego createInfo(Juego juegoEnEspera, Carton cartonById) {
-        // Creamos un objeto de tipo InfoJuego y le asignamos los valores recibidos como parámetros
         InfoJuego infoJuego = new InfoJuego();
         infoJuego.setJuego(juegoEnEspera);
         infoJuego.setCarton(cartonById);
-
-        // Guardamos el objeto en la base de datos y lo retornamos
         return infoJuegoRepository.save(infoJuego);
     }
 

@@ -63,7 +63,7 @@ public class BingoController {
     }
 
     // Método para crear un juego automáticamente cada diez minutos
-    @Scheduled(fixedRate = 600000) // Ejecutar cada 10 minutos (600000 milisegundos)
+    @Scheduled(fixedRate = 480000) // Ejecutar cada 8 minutos (480000 milisegundos)
     public void crearJuegoAutomatico() {
         Juego juego =new Juego(); // Crea un nuevo objeto juego
         juego.setEstado("Creado"); // Asigna el estado "Creado" al objeto juego
@@ -167,7 +167,7 @@ public class BingoController {
      * Devuelve el juego en estado diferente de "terminado" con un ganador.
      * @return El juego en estado diferente de "terminado" con un ganador.
      */
-    @GetMapping("/ganador")
+    @GetMapping("/consulta/ganador")
     public ResponseEntity<Juego> ganador(){
         Juego ganador =juegoRepository.ganadorFindEstado("terminado");
         return ResponseEntity.ok(ganador);
