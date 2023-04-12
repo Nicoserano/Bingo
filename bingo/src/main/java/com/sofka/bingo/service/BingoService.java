@@ -75,7 +75,7 @@ public class BingoService implements Ibingo{
             scheduler.schedule(() -> {
                 Juego juegoactual = juegoRepository.findEstadoJuego("en juego");
                 if (juegoactual.getEstado().equals("en juego")){
-                    juegoactual.setEstado("terminado");
+                    juego.setEstado("terminado");
                     juegoRepository.save(juego);
                 }
                 else {
