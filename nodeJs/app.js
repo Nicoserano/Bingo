@@ -6,6 +6,7 @@ const router = require('./routes/routes');
 const port = 9090
 const cors = require('cors');
 
+// Configuración de middlewares
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -14,9 +15,6 @@ app.use(express.json());
 mongoose.connect(process.env.MONGODB)
 .then(() => console.log('Conectado a la base de datos'))
 .catch(error => console.error(error));
-
-
-// Configuración de middlewares
 
 // Configuración de las rutas
 app.use('/', router);

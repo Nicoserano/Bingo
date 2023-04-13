@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+// Creamos un esquema para el modelo 'usuario'
 const usuarioSchema = new  mongoose.Schema({
     nombre: {
         type: String,
@@ -8,20 +9,20 @@ const usuarioSchema = new  mongoose.Schema({
       },
     usuario:{
         type: String,
-        required:true
+        required:true// el nombre de usuario es obligatorio
     },
     email:{
       type:String,
-      required:true
+      required:true// el correo electrónico es obligatorio
     },
     contraseña:{
         type:String,
-        required:true
+        required:true// la contraseña es obligatoria
     }
 
-
-
 });
+
+// Antes de guardar el usuario en la base de datos, se aplica el hash a la contraseña
 usuarioSchema.pre('save', function(next) {
     const user = this;
     if (!user.isModified('contraseña')) {
@@ -41,7 +42,11 @@ usuarioSchema.pre('save', function(next) {
     });
   });
 
+  // Creamos el modelo 'Usuario' a partir del esquema definido
 const Usuario = mongoose.model('Usuario', usuarioSchema);
 
-module.exports = {Usuario};
+module.exports = Usuario;
+
+
+
   
