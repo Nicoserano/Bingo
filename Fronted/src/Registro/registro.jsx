@@ -3,28 +3,22 @@ import "./registro.css";
 import { useNavigate } from "react-router-dom";
 
 const Registro = () => {
-  const [nombre, setNombre] = React.useState("");
-  const [usuario, setUsuario] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [contraseña, setContraseña] = React.useState("");
-  const Navigate = useNavigate();
-
   const enviarDatos = async (e) => {
     e.preventDefault();
-
+  
     const {
       target: { nombre, usuario, email, contraseña },
     } = e;
-
+   // Se almacenan los valores de los campos del formulario en un objeto
     const values = {
       nombre: nombre.value,
       usuario: usuario.value,
       email: email.value,
       contraseña: contraseña.value,
     }
-
-    // console.log(values)
-    
+  
+   
+    // Se envía una petición POST al servidor con los valores del formulario
     const data = await fetch("http://localhost:9090/guardado", {
       method: "POST",
       headers: {
@@ -32,13 +26,20 @@ const Registro = () => {
       },
       body: JSON.stringify(values),
     })
-
-    if(!data.ok) {
-      alert("Error al guardar los datos")
-    }
+  
     
+  
+    if(!data.ok) {
+      alert("Error al guardar los datos")// Si la respuesta del servidor es incorrecta se muestra una alerta
+    }
+  
+    
+    // Esta función se ejecuta al enviar el formulario y guarda los datos en el servidor
     Navigate("/")
   }
+  
+
+  
 
     return (
         <div>
