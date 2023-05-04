@@ -2,7 +2,9 @@ import React from "react";
 import "./registro.css";
 import { useNavigate } from "react-router-dom";
 
+
 const Registro = () => {
+  const Navigate = useNavigate();
   const enviarDatos = async (e) => {
     e.preventDefault();
   

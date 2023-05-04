@@ -34,7 +34,6 @@ const Login = () => {
     const id_jugador = data.data.id_jugador;
   
     // Se marca al usuario como logueado y se redirige al lobby de la partida
-    setLogueado(true)
     Navigate(`lobby/${id_jugador}/${usuario.value}/carton`)
   }
   
